@@ -1,12 +1,12 @@
 package cats
 package tests
 
-import cats.data.EitherT
+import cats.data.{EitherT, State}
 import cats.functor.Bifunctor
 import cats.functor._
 import cats.laws.discipline._
 import cats.laws.discipline.arbitrary._
-import cats.kernel.laws.{OrderLaws, GroupLaws}
+import cats.kernel.laws.{GroupLaws, OrderLaws}
 
 class EitherTTests extends CatsSuite {
   implicit val iso = CartesianTests.Isomorphisms.invariant[EitherT[ListWrapper, String, ?]](EitherT.catsDataFunctorForEitherT(ListWrapper.functor))
@@ -106,6 +106,12 @@ class EitherTTests extends CatsSuite {
 
     checkAll("EitherT[ListWrapper, String, Int]", OrderLaws[EitherT[ListWrapper, String, Int]].eqv)
     checkAll("Eq[EitherT[ListWrapper, String, Int]]", SerializableTests.serializable(Eq[EitherT[ListWrapper, String, Int]]))
+  }
+
+  {
+    // check if EitherT has a MonadState instance
+    implicitly[MonadState[State[Int, ?], Int]]
+    implicitly[MonadState[EitherT[State[Int, ?], String, ?], Int]]
   }
 
   test("toValidated") {

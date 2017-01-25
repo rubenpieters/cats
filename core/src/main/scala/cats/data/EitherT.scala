@@ -356,7 +356,6 @@ private[data] abstract class EitherTInstances extends EitherTInstances1 {
 
   implicit def catsMonoidForEitherT[F[_], L, A](implicit F: Monoid[F[Either[L, A]]]): Monoid[EitherT[F, L, A]] =
     new EitherTMonoid[F, L, A] { implicit val F0 = F }
-
 }
 
 private[data] abstract class EitherTInstances1 extends EitherTInstances2 {
@@ -385,6 +384,9 @@ private[data] abstract class EitherTInstances1 extends EitherTInstances2 {
     new EitherTBitraverse[F] {
       val F0: Traverse[F] = F
     }
+
+  implicit def catsDataMonadStateForEitherT[F[_], L, A](implicit F0: MonadState[F, A]): MonadState[EitherT[F, L, ?], A] =
+    new EitherTMonadState[F, L, A] { implicit val F = F0 }
 }
 
 private[data] abstract class EitherTInstances2 extends EitherTInstances3 {
@@ -525,4 +527,12 @@ private[data] sealed trait EitherTOrder[F[_], L, A] extends Order[EitherT[F, L, 
   override implicit def F0: Order[F[Either[L, A]]]
 
   override def compare(x: EitherT[F, L, A], y: EitherT[F, L, A]): Int = x compare y
+}
+
+private[data] sealed trait EitherTMonadState[F[_], L, A] extends EitherTMonad[F, L] with MonadState[EitherT[F, L, ?], A] {
+  implicit val F: MonadState[F, A]
+
+  override def get: EitherT[F, L, A] = EitherT.liftT(F.get)
+
+  override def set(a: A): EitherT[F, L, Unit] = EitherT.liftT(F.set(a))
 }
