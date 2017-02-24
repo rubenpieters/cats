@@ -303,9 +303,9 @@ private trait KleisliApplicative[F[_], A] extends Applicative[Kleisli[F, A, ?]] 
 private trait KleisliMonadError[F[_], A, E] extends KleisliApplicativeError[F, A, E] with MonadError[Kleisli[F, A, ?], E] {
   implicit def MF: Monad[F]
 
-  override def flatMap[B](fa: Kleisli[F, A, A])(f: A => Kleisli[F, A, B]): Kleisli[F, A, B] =
+  override def flatMap[B](fa: K[A])(f: A => K[B]): K[B] =
     MF.flatMap(fa)(f)
 
-  override def tailRecM[B](a: A)(f: A => Kleisli[F, A, Either[A, B]]): Kleisli[F, A, B] =
+  override def tailRecM[B](a: A)(f: A => K[Either[A, B]]): K[B] =
     MF.tailRecM(a)(f)
 }
