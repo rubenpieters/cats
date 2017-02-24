@@ -296,6 +296,6 @@ private trait KleisliApplicative[F[_], A] extends Applicative[Kleisli[F, A, ?]] 
     Kleisli(a => Applicative[F].product(fb.run(a), fc.run(a)))
 }
 
-private trait KleisliMonadError[F[_], A, E] extends KleisliApplicativeError[F, A] with MonadError[Kleisli[F, A, ?], E] {
+private trait KleisliMonadError[F[_], A, E] extends KleisliApplicativeError[F, A, E] with MonadError[Kleisli[F, A, ?], E] {
 
 }
